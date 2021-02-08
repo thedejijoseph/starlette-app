@@ -2,6 +2,8 @@ from starlette.applications import Starlette
 from starlette.responses import JSONResponse
 from starlette.routing import Route
 
+import uvicorn
+
 # util: helper methods
 # common responses
 
@@ -43,3 +45,6 @@ app = Starlette(
     routes=routes,
     exception_handlers=exception_handlers
     )
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
