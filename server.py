@@ -27,17 +27,47 @@ async def root(request):
     response = await success('Clipboard API Root. (https://clipboard-app.netlify.app')
     return response
 
+async def hello(request):
+    name = request.query_params.get('name', 'Johnn Doe')
+    response = await success(f'Hello there, {name}')
+    return response
 
+async def room(request):
+    room_id = request.path_params['room_id']
+    respomse = await success(f'You are now in Room {room_id}.')
+    return respomse
+
+
+async def not_found(request, exc):
+    response = {
+        'success': False,
+        'message': 'Not found',
+        'errors': [{
+            'message': f'URL {request.url.path} is not on this server.'
+        }]
+    }
+    return JSONResponse(response, status_code=404)
 
 async def server_error(request, exc):
-    return JSONResponse({'message': 'Server error', 'details':repr(exc)}, status_code=500)
+    response = {
+        'success': False,
+        'message': 'Server error',
+        'errors': [{
+            'message': str(exc),
+            'details': repr(exc)
+        }]
+    }
+    return JSONResponse(response, status_code=500)
 
 exception_handlers = {
+    404: not_found,
     500: server_error
 }
 
 routes = [
-    Route('/', root)
+    Route('/', root),
+    Route('/hello', hello),
+    Route('/room/{room_id}', room)
 ]
 
 app = Starlette(
